@@ -18,9 +18,6 @@ spec:
       namespaces:
         - argocd
         - kasten-io
-        - kube-system
-        - kube-public
-        - kube-node-lease
   rules:
   - name: enforce-data-protection-by-preset-label
     match:

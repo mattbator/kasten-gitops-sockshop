@@ -9,7 +9,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-admin #Obviously you would want to swap this for a custom ClusterRole that can read namespace and perform RunActions
+  name: cluster-admin # IRL you would want to swap this for a custom ClusterRole that can read list/get namespaces and list/get/create RunActions
 subjects:
 - kind: ServiceAccount
   name: kasten-pre-sync
