@@ -7,7 +7,7 @@ metadata:
     policies.kyverno.io/category: K10
     policies.kyverno.io/subject: Deployment, StatefulSet
     policies.kyverno.io/description: >-
-      Ensure all Deployments and StatefulSets include a label referencing a valid K10 SLA (Policy Preset) for data protection.
+      Ensure all namespaces include a label referencing a valid K10 SLA (Policy Preset) for data protection.
       This policy can be used in combination with generate ClusterPolicy to generate to automatically create a K10 policy based on the specified SLA.
       
       NOTE: This example assumes that K10 policy presets named "gold", "silver", and "bronze" have been pre-created and K10 was deployed into the `kasten-io` namespace.

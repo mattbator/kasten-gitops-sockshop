@@ -1,6 +1,6 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: argo-test
+  name: sockshop
   labels:
-    dataprotection: gold
+    #dataprotection: gold
