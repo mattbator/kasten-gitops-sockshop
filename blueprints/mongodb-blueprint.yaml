@@ -1,0 +1,37 @@
+apiVersion: cr.kanister.io/v1alpha1
+kind: Blueprint
+metadata:
+  name: mongodb-snapshot
+actions:
+  backupPrehook:
+    phases:
+    - func: KubeExec
+      name: lockMongo
+      args:
+        namespace: "{{ .Deployment.Namespace }}"
+        pod: "{{ index .Deployment.Pods 0 }}"
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          mongo --authenticationDatabase admin --eval="db.fsyncLock()"
+  backupPosthook:
+    phases:
+    - func: KubeExec
+      name: unlockMongo
+      args:
+        namespace: "{{ .Deployment.Namespace }}"
+        pod: "{{ index .Deployment.Pods 0 }}"
+        command:
+        - bash
+        - -o
+        - errexit
+        - -o
+        - pipefail
+        - -c
+        - |
+          mongo --authenticationDatabase admin --eval="db.fsyncUnlock()"

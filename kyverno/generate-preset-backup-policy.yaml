@@ -1,0 +1,61 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: generate-preset-backup-policy
+  annotations:
+    policies.kyverno.io/title: Generate Gold Backup Policy
+    policies.kyverno.io/category: K10
+    policies.kyverno.io/subject: Policy
+    policies.kyverno.io/description: >-
+      Generate a backup policy for a namespace if any Deployment or StatefulSet includes a valid "dataprotection" labels, and the policy does not already exist.
+      
+spec:
+  background: false
+  rules:
+  - name: "generate-preset-backup-policy"
+    match:
+      resources:
+        kinds:
+          - Deployment
+          - StatefulSet
+        selector:
+          matchExpressions:
+            - key: dataprotection 
+              operator: In
+              values: 
+              - gold
+              - silver
+              - bronze
+    context:
+    - name: existingPolicy
+      apiCall:
+        urlPath: "/apis/config.kio.kasten.io/v1alpha1/namespaces/kasten-io/policies/" # returns list of K10 policies
+        jmesPath: "items[][[@.spec.presetRef][?name=='{{ request.object.metadata.labels.dataprotection }}'] && [@.spec.selector.matchExpressions[].values[?@=='{{ request.namespace }}']]][][][][] | length(@)" # queries if a policy based on that preset, covering that app namespace already exists 
+    preconditions:
+      any:
+      - key: "{{ existingPolicy }}"
+        operator: Equals
+        value: 0
+    generate:
+      apiVersion: config.kio.kasten.io/v1alpha1
+      kind: Policy
+      name: "{{ request.namespace }}-{{ request.object.metadata.labels.dataprotection }}-backup"
+      namespace: kasten-io
+      data:
+        metadata:
+          name: "{{ request.namespace }}-{{ request.object.metadata.labels.dataprotection }}-backup"
+          namespace: kasten-io
+        spec:
+          comment: ""
+          paused: false
+          actions:
+            - action: backup
+          presetRef:
+            name: "{{ request.object.metadata.labels.dataprotection }}""
+            namespace: kasten-io
+          selector:
+            matchExpressions:
+              - key: k10.kasten.io/appNamespace
+                operator: In
+                values:
+                  - "{{ request.namespace }}"
