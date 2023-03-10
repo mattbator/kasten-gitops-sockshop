@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: catalogue-db-maint-job
+  annotations: 
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - command: 
+        - /bin/bash
+        - -c
+        - |
+          #!/bin/bash
+          # Oh no !! Looks like I forgot the WHERE clause in my query! :(
+          cat <<EOF > catalogue-db-update.sql
+          USE socksdb;
+          SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+          DELETE sock
+          FROM sock
+          JOIN sock_tag ON sock.sock_id=sock_tag.sock_id
+          JOIN tag ON tag.tag_id=sock_tag.tag_id;
+          # WHERE tag.name in ${COLORS};
+          SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+          EOF
+          mysql -h catalogue-db -p\${MYSQL_ROOT_PASSWORD} -uroot < catalogue-db-update.sql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mysql-secret
+        - name: COLORS
+          valueFrom:
+            configMapKeyRef:
+              name: unwanted-stock
+              key: colors
+        image: docker.io/bitnami/mysql:5.7.17-r7
+        name: mysql
+      restartPolicy: Never
