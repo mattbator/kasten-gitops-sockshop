@@ -24,7 +24,6 @@ spec:
            - |
              # Manually execute the K10 policy with a RunAction
              POLICY_TYPE=$(kubectl get ns -n ${NAMESPACE} -o jsonpath='{.items[0].metadata.labels.dataprotection}')
-             #POLICY_TYPE=gold
              RUN_ACTION_NAME="argo-presync-$(date| tr ' ' '-'|tr ':' '-'|tr '[:upper:]' '[:lower:]')"
              cat <<EOF | kubectl create -f -
              apiVersion: actions.kio.kasten.io/v1alpha1
@@ -39,8 +38,8 @@ spec:
              EOF
 
              # Wait until the policy RunAction is complete before proceeding with Argo Sync
-             count=30
-             delay=3
+             count=90
+             delay=10
              total_time=$((count*delay))
              while true 
              do
