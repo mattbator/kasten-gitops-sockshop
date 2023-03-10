@@ -23,7 +23,7 @@ spec:
            - -c
            - |
              # Manually execute the K10 policy with a RunAction
-             POLICY_TYPE=$(kubectl get ns -n ${NAMESPACE} -o jsonpath='{.items[0].metadata.labels.dataprotection}')
+             POLICY_TYPE=$(kubectl get ns ${NAMESPACE} -o jsonpath='{.metadata.labels.dataprotection}')
              RUN_ACTION_NAME="argo-presync-$(date| tr ' ' '-'|tr ':' '-'|tr '[:upper:]' '[:lower:]')"
              cat <<EOF | kubectl create -f -
              apiVersion: actions.kio.kasten.io/v1alpha1
