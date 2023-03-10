@@ -7,7 +7,7 @@ metadata:
     policies.kyverno.io/category: K10
     policies.kyverno.io/subject: Policy
     policies.kyverno.io/description: >-
-      Generate a backup policy for a namespace if any Deployment or StatefulSet includes a valid "dataprotection" labels, and the policy does not already exist.
+      Generate a backup policy for a namespace that includes a valid "dataprotection" label, and the policy does not already exist.
       
 spec:
   background: false
@@ -16,8 +16,7 @@ spec:
     match:
       resources:
         kinds:
-          - Deployment
-          - StatefulSet
+          - Namespace
         selector:
           matchExpressions:
             - key: dataprotection 

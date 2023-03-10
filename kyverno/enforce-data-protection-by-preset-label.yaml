@@ -26,11 +26,10 @@ spec:
     match:
       resources:
         kinds:
-        - Deployment
-        - StatefulSet
+        - Namespace
     validate:
       message: >-
-        Deployments and StatefulSets must specify a "dataprotection" label with a value corresponding to a Kasten K10 SLA:
+        Namespaces must specify a "dataprotection" label with a value corresponding to a Kasten K10 SLA:
         
           gold - Hourly backups exported to object storage
           silver - Daily backups exported to object storage
