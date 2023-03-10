@@ -1,0 +1,68 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: kasten-pre-sync-
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      serviceAccountName: kasten-pre-sync
+      containers:
+       - image: ghcr.io/kanisterio/kanister-kubectl:1.18
+         command:
+           - sh
+           - -o
+           - errexit
+           - -o
+           - pipefail
+           - -c
+           - |
+             # Manually execute the K10 policy with a RunAction
+             POLICY_TYPE=$(kubectl get ns -n ${NAMESPACE} -o jsonpath='{.items[0].metadata.labels.dataprotection}')
+             RUN_ACTION_NAME="argo-presync-$(date| tr ' ' '-'|tr ':' '-'|tr '[:upper:]' '[:lower:]')"
+             cat <<EOF | kubectl create -f -
+             apiVersion: actions.kio.kasten.io/v1alpha1
+             kind: RunAction
+             metadata:
+               name: $RUN_ACTION_NAME
+             spec:
+               subject:
+                 kind: Policy
+                 name: ${NAMESPACE}-${POLICY_TYPE}-backup
+                 namespace: kasten-io
+             EOF
+
+             # Wait until the policy RunAction is complete before proceeding with Argo Sync
+             count=30
+             delay=3
+             total_time=$((count*delay))
+             while true 
+             do
+               state=$(kubectl get runaction -n kasten-io ${RUN_ACTION_NAME} -o jsonpath='{.status.state}')
+               if [ "$state" =  "Complete" ]
+               then 
+                 echo "RunAction ${RUN_ACTION_NAME} is Complete"                
+                 break
+               else 
+                 echo "RunAction ${RUN_ACTION_NAME} is ${state}"
+                 count=$((count-1))
+                 sleep $delay
+               fi
+               if [ $count = 0 ] 
+               then 
+                 echo "RunAction ${RUN_ACTION_NAME} failed to Complete after ${total_time} seconds"
+                 exit 1 
+               fi
+             done 
+         env:          
+         - name: NAMESPACE
+           valueFrom:
+             fieldRef:
+               fieldPath: metadata.namespace
+         name: back-me-up-scotty
+      restartPolicy: Never
