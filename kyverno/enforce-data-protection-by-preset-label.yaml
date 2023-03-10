@@ -26,12 +26,12 @@ spec:
         - Namespace
     validate:
       message: >-
-        Namespaces must specify a "dataprotection" label with a value corresponding to a Kasten K10 SLA:\n\n
+        Namespaces must specify a "dataprotection" label with a value corresponding to a Kasten K10 SLA:
         
-          "gold" - Hourly backups exported to object storage\n
-          "silver" - Daily backups exported to object storage\n
-          "bronze" - Daily local snapshots\n
-          "none" - Living on the edge!\n
+          "gold" - Hourly backups exported to object storage
+          "silver" - Daily backups exported to object storage
+          "bronze" - Daily local snapshots
+          "none" - Living on the edge!
           
       pattern:
         metadata:
