@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: argo-test
   labels:
-    #dataprotection: gold
+    dataprotection: gold
