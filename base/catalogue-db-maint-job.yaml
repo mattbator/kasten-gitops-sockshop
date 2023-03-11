@@ -23,8 +23,8 @@ spec:
           DELETE sock
           FROM sock
           JOIN sock_tag ON sock.sock_id=sock_tag.sock_id
-          JOIN tag ON tag.tag_id=sock_tag.tag_id;
-          #WHERE tag.name in ${COLORS}; <--- OH NO!!!
+          JOIN tag ON tag.tag_id=sock_tag.tag_id
+          WHERE tag.name in ${COLORS};
           SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
           EOF
 
