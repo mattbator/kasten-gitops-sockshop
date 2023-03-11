@@ -633,7 +633,6 @@ spec:
       labels:
         name: rabbitmq
     spec:
-      affinity:
       containers:
       - name: rabbitmq
         image: rabbitmq:3.6.8
