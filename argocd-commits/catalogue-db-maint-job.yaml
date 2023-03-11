@@ -3,8 +3,8 @@ kind: Job
 metadata:
   name: catalogue-db-maint-job
   annotations: 
-    argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   template:
     metadata:
@@ -16,7 +16,9 @@ spec:
         - -c
         - |
           #!/bin/bash
+
           # Oh no !! Looks like I forgot the WHERE clause in my query! :(
+
           cat <<EOF > catalogue-db-update.sql
           USE socksdb;
           SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
@@ -24,10 +26,11 @@ spec:
           FROM sock
           JOIN sock_tag ON sock.sock_id=sock_tag.sock_id
           JOIN tag ON tag.tag_id=sock_tag.tag_id;
-          # WHERE tag.name in ${COLORS};
+          #WHERE tag.name in ${COLORS};
           SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
           EOF
-          mysql -h catalogue-db -p\${MYSQL_ROOT_PASSWORD} -uroot < catalogue-db-update.sql
+
+          mysql -h catalogue-db -p${MYSQL_ROOT_PASSWORD} -uroot < catalogue-db-update.sql
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:

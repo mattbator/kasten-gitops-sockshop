@@ -5,7 +5,7 @@ metadata:
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/sync-wave: "1"
   creationTimestamp: null
-  name: pre-sync-k10-admin
+  name: presync-sa-crb
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
