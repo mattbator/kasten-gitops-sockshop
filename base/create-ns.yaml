@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: sockshop
   labels:
-    #dataprotection: gold
+    dataprotection: gold
