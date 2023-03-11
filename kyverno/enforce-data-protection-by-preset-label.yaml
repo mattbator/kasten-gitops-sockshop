@@ -18,6 +18,7 @@ spec:
       namespaces:
         - argocd
         - kasten-io
+        - kasten-io-mc
   rules:
   - name: enforce-data-protection-by-preset-label
     match:

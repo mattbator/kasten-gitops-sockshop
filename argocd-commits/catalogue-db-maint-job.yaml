@@ -7,8 +7,6 @@ metadata:
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   template:
-    metadata:
-      creationTimestamp: null
     spec:
       containers:
       - command: 

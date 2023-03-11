@@ -8,8 +8,6 @@ metadata:
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   template:
-    metadata:
-      creationTimestamp: null
     spec:
       serviceAccountName: kasten-pre-sync
       containers:
